@@ -1,0 +1,23 @@
+
+
+tcc builds a single object file- multiple symbols are not allowed
+
+multiple tcc states can be used to create separate namespaces
+
+
+can add object files- could bulid each file in project, then add them each in turn?
+this seems the same as compiling them in from source, but perhaps slightly faster?
+
+can have separate tcc states for each wrk.c file, each declaring a wrk_main function
+then have one tcc state for the program, which each wrk_main function receives and
+adds files to
+
+
+read wrk.c file- if it starts with #!, each up to tcc, then to -run, and pass remaining
+argments to libtcc. this allows linking wrk.c files against libraries such as pthreads
+generally better to add functions to wrk, or use single header files ones, but allows
+normal libraries as well.
+
+
+likely have to link work into each wrk.c file- either as an so, ar, or just compile in the
+code
