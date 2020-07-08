@@ -2,8 +2,9 @@
 #define _WRK_H_
 
 #include <stdint.h>
+#include <stdbool.h>
 
-#include "tcclib.h"
+#include "libtcc.h"
 
 
 // work run    - run wrk.c files and run the result. this is the normal use
@@ -17,6 +18,7 @@
 typedef enum WRK_RESULT_ENUM {
     WRK_RESULT_OKAY     = 1,
     WRK_RESULT_NULL_PTR = 2,
+    WRK_RESULT_ERROR    = 3,
 } WRK_RESULT_ENUM;
 
 typedef enum WRK_TARGET_TYPE_ENUM {
@@ -26,6 +28,8 @@ typedef enum WRK_TARGET_TYPE_ENUM {
     WRK_TARGET_TYPE_EXE       = 4,
 } WRK_TARGET_TYPE_ENUM;
 
+
+struct WrkTarget;
 
 typedef struct WrkTarget {
     char *name;
@@ -40,8 +44,9 @@ typedef struct WrkTarget {
     char **libs;
     char **lib_paths;
     char **vars;
+    char **var_values;
 
-    WrkTarget *parent;
+    struct WrkTarget *parent;
 } WrkTarget;
 
 typedef struct WrkState {
@@ -49,9 +54,11 @@ typedef struct WrkState {
     bool run;
 } WrkState;
 
+typedef WrkTarget *WrkMain(WrkState *state, WrkTarget *target);
+
 
 /* Wrk State Functions */
-WRK_RESULT_ENUM wrk_state_create(WkrState *state, bool run);
+WRK_RESULT_ENUM wrk_state_create(WrkState *state, bool run);
 
 
 /* Target Functions */
@@ -59,15 +66,17 @@ WrkTarget *wrk_target_create(char *name, WRK_TARGET_TYPE_ENUM type);
 WRK_TARGET_TYPE_ENUM wrk_target_destroy(WrkTarget *target);
 
 WrkTarget *wrk_target_dup(WrkTarget *target);
-WRK_RESULT_ENUM wrk_target_link(WrkTarget *parent, WrkTarget *target);
+void wrk_target_link(WrkTarget *parent, WrkTarget *target);
 WRK_RESULT_ENUM wrk_target_merge(WrkTarget *dest, WrkTarget *src);
 WrkTarget *wrk_target_collapse(WrkTarget *target);
 
 char *wrk_target_command(WrkTarget *target);
 
+void wrk_target_add_input(WrkTarget *target, char *name);
+
 
 /* Building */
-WRK_TARGET_TYPE_ENUM wrk_target_build(WrkState *state, WrkTarget *target);
+WRK_RESULT_ENUM wrk_target_build(WrkState *state, WrkTarget *target);
 
 WrkTarget *wrk_run(WrkState *state, WrkTarget *prototype, char *work_file);
 

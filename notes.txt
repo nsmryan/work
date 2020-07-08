@@ -21,3 +21,24 @@ normal libraries as well.
 
 likely have to link work into each wrk.c file- either as an so, ar, or just compile in the
 code
+
+
+would have each wrk.c file's wrk_main return a list of targets, to be added to the full list.
+
+haven't worked out passing requirements upwards- this library requires gcc, or must be compiled
+into code that requires a flag? Or, if this library is build with these flags, another library
+must be build in a different way.
+
+
+could bundle work.a into work, and maybe work.h? then add them to wrk.c files as they are compiled?
+OS probably has a way to map memory as a file for this.
+this would make the whole thing self contained
+
+
+
+what about something like building native exes for speed with gcc? like, pass the release, native
+options and you get the fastest executable your machine can use?
+
+
+can the work exe statically link musl or another libc, to avoid as many dependancies as possible?
+would also improve start times, as there is less linking needed.
