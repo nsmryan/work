@@ -1,7 +1,7 @@
 #ifndef _WRK_H_
 #define _WRK_H_
 
-#include <stdint.h>
+//#include <stdint.h>
 #include <stdbool.h>
 
 #include "libtcc.h"
@@ -73,6 +73,10 @@ WrkTarget *wrk_target_collapse(WrkTarget *target);
 char *wrk_target_command(WrkTarget *target);
 
 void wrk_target_add_input(WrkTarget *target, char *name);
+void wrk_target_add_flag(WrkTarget *target, char *name);
+void wrk_target_add_include_path(WrkTarget *target, char *name);
+void wrk_target_add_lib_path(WrkTarget *target, char *name);
+void wrk_target_add_lib(WrkTarget *target, char *name);
 
 
 /* Building */
