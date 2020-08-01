@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <assert.h>
 
 #include "libtcc.h"
 #include "buf.h"
@@ -119,8 +120,49 @@ WRK_RESULT_ENUM wrk_target_build(WrkState *wrk_state, WrkTarget *target) {
         }
     }
 
+    return WRK_RESULT_OKAY;
+}
+
+WRK_RESULT_ENUM wrk_output_file(WrkState *wrk_state, WrkTarget *target) {
     log_trace("setting output type");
-    ret = tcc_set_output_type(wrk_state->tcc, TCC_OUTPUT_EXE);
+
+    int tcc_type = 0;
+    char *output_type_name = NULL;
+
+    // not used: TCC_OUTPUT_MEMORY TCC_OUTPUT_PREPROCESS
+    switch (target->type) {
+        case WRK_TARGET_TYPE_SO:
+            tcc_type = TCC_OUTPUT_DLL;
+            output_type_name = "shared object";
+            break;
+
+        case WRK_TARGET_TYPE_OBJ:
+            tcc_type = TCC_OUTPUT_OBJ;
+            output_type_name = "object file";
+            break;
+
+        case WRK_TARGET_TYPE_EXE:
+            tcc_type = TCC_OUTPUT_EXE;
+            output_type_name = "executable";
+            break;
+
+        case WRK_TARGET_TYPE_NAMESPACE:
+            output_type_name = "namespace";
+            break;
+
+        default:
+            output_type_name = "UnexpectedType";
+            tcc_type = 0;
+    }
+
+    assert(NULL != output_type_name);
+
+    if (tcc_type == 0) {
+        log_error("Unexpected target type when outputting file. Type = %d", target->type);
+        return WRK_RESULT_UNEXPECTED_TYPE;
+    }
+
+    int ret = tcc_set_output_type(wrk_state->tcc, tcc_type);
     if (ret != 0) {
         log_error("%s failed to set output type");
         return NULL;
@@ -132,12 +174,12 @@ WRK_RESULT_ENUM wrk_target_build(WrkState *wrk_state, WrkTarget *target) {
         return WRK_RESULT_ERROR;
     }
 
-    log_trace("finished building!");
+    log_trace("finished output of %s with type %s", target->name, output_type_name);
 
-    return WRK_RESULT_OKAY;;
+    return WRK_RESULT_OKAY;
 }
 
-WrkTarget *wrk_run(WrkState *wrk_state, WrkTarget *prototype, char *work_file) {
+WrkTarget *wrk_run_workfile(WrkState *wrk_state, WrkTarget *prototype, char *work_file) {
     log_trace("wrk_run for '%s'", work_file);
 
     TCCState *tcc = tcc_new();

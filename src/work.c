@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <assert.h>
 
 #include "log.h"
 #include "work.h"
@@ -22,8 +23,12 @@ int main(int argc, char *argv[]) {
     log_trace("creating target");
     WrkTarget *prototype = wrk_target_create(NULL, WRK_TARGET_TYPE_NAMESPACE);
 
-    WrkTarget *target = wrk_run(&wrk_state, prototype, wrk_file);
+    WrkTarget *target = wrk_run_workfile(&wrk_state, prototype, wrk_file);
 
-    log_trace("Work done!\n");
+    assert(NULL != target);
+
+    wrk_output_file(&wrk_state, target);
+
+    log_trace("My work here is done\n");
 }
 

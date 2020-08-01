@@ -18,14 +18,18 @@
 typedef enum WRK_RESULT_ENUM {
     WRK_RESULT_OKAY     = 1,
     WRK_RESULT_NULL_PTR = 2,
-    WRK_RESULT_ERROR    = 3,
+    WRK_RESULT_UNEXPECTED_TYPE = 3,
+    WRK_RESULT_ERROR    = 4,
 } WRK_RESULT_ENUM;
 
+// NOTE does not include archive files- no option
+// in tcc. may need to make separately
 typedef enum WRK_TARGET_TYPE_ENUM {
     WRK_TARGET_TYPE_NAMESPACE = 1,
-    WRK_TARGET_TYPE_SO        = 2,
+    WRK_TARGET_TYPE_OBJ       = 2,
     WRK_TARGET_TYPE_AR        = 3,
     WRK_TARGET_TYPE_EXE       = 4,
+    WRK_TARGET_TYPE_SO        = 5,
 } WRK_TARGET_TYPE_ENUM;
 
 
@@ -81,7 +85,9 @@ void wrk_target_add_lib(WrkTarget *target, char *name);
 
 /* Building */
 WRK_RESULT_ENUM wrk_target_build(WrkState *state, WrkTarget *target);
+WRK_RESULT_ENUM wrk_output_exe(WrkState *wrk_state, WrkTarget *target);
+WRK_RESULT_ENUM wrk_output_file(WrkState *wrk_state, WrkTarget *target);
 
-WrkTarget *wrk_run(WrkState *state, WrkTarget *prototype, char *work_file);
+WrkTarget *wrk_run_workfile(WrkState *state, WrkTarget *prototype, char *work_file);
 
 #endif

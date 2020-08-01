@@ -27,6 +27,6 @@
 
      printf("wrk.c finished\n");
 
-     return NULL;
+     return main_target;
  }
 
