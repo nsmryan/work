@@ -11,7 +11,6 @@
 #include "work.h"
 
 
-
 WrkTarget *wrk_target_create(char *name, WRK_TARGET_TYPE_ENUM type) {
     WrkTarget *target = (WrkTarget*)calloc(sizeof(WrkTarget), 1);
 
@@ -69,6 +68,7 @@ void wrk_target_add_lib(WrkTarget *target, char *name) {
 WRK_RESULT_ENUM wrk_target_build(WrkState *wrk_state, WrkTarget *target) {
     int ret = 0;
 
+    printf("%s %d\n", __FUNCTION__, __LINE__);
     log_trace("adding include paths");
     for (uint32_t inc_index = 0; inc_index < buf_size(target->inc_paths); inc_index++) {
         ret = tcc_add_include_path(wrk_state->tcc, target->inc_paths[inc_index]);
@@ -77,12 +77,14 @@ WRK_RESULT_ENUM wrk_target_build(WrkState *wrk_state, WrkTarget *target) {
         }
     }
 
+    printf("%s %d\n", __FUNCTION__, __LINE__);
     log_trace("adding symbols");
     for (uint32_t var_index = 0; var_index < buf_size(target->vars); var_index++) {
         log_trace("\tsymbol %s", target->vars[var_index]);
         tcc_define_symbol(wrk_state->tcc, target->vars[var_index], target->var_values[var_index]);
     }
 
+    printf("%s %d\n", __FUNCTION__, __LINE__);
     log_trace("adding library paths");
     for (uint32_t lib_path_index = 0; lib_path_index < buf_size(target->lib_paths); lib_path_index++) {
         log_trace("\tlib path %s", target->lib_paths[lib_path_index]);
@@ -92,6 +94,7 @@ WRK_RESULT_ENUM wrk_target_build(WrkState *wrk_state, WrkTarget *target) {
         }
     }
 
+    printf("%s %d\n", __FUNCTION__, __LINE__);
     log_trace("adding libraries");
     for (uint32_t lib_index = 0; lib_index < buf_size(target->libs); lib_index++) {
         log_trace("\tlib %s", target->libs[lib_index]);
@@ -101,8 +104,10 @@ WRK_RESULT_ENUM wrk_target_build(WrkState *wrk_state, WrkTarget *target) {
         }
     }
 
+    printf("%s %d\n", __FUNCTION__, __LINE__);
     log_trace("adding files");
     for (uint32_t input_index = 0; input_index < buf_size(target->inputs); input_index++) {
+        printf("adding file %s\n", target->inputs[input_index]);
         log_trace("\tfile %s", target->inputs[input_index]);
         ret = tcc_add_file(wrk_state->tcc, target->inputs[input_index]);
         if (ret != 0) {
@@ -110,6 +115,7 @@ WRK_RESULT_ENUM wrk_target_build(WrkState *wrk_state, WrkTarget *target) {
         }
     }
 
+    printf("%s %d\n", __FUNCTION__, __LINE__);
     log_trace("adding flags");
     for (uint32_t flag_index = 0; flag_index < buf_size(target->flags); flag_index++) {
         log_trace("\tflag %s", target->flags[flag_index]);
@@ -119,17 +125,21 @@ WRK_RESULT_ENUM wrk_target_build(WrkState *wrk_state, WrkTarget *target) {
             return WRK_RESULT_ERROR;
         }
     }
+    printf("%s %d\n", __FUNCTION__, __LINE__);
 
     return WRK_RESULT_OKAY;
 }
 
 WRK_RESULT_ENUM wrk_output_file(WrkState *wrk_state, WrkTarget *target) {
+    assert(NULL != wrk_state);
+    assert(NULL != target);
+
     log_trace("setting output type");
 
     int tcc_type = 0;
     char *output_type_name = NULL;
 
-    // not used: TCC_OUTPUT_MEMORY TCC_OUTPUT_PREPROCESS
+    // not used: TCC_OUTPUT_MEMORY, TCC_OUTPUT_PREPROCESS
     switch (target->type) {
         case WRK_TARGET_TYPE_SO:
             tcc_type = TCC_OUTPUT_DLL;
@@ -157,18 +167,20 @@ WRK_RESULT_ENUM wrk_output_file(WrkState *wrk_state, WrkTarget *target) {
 
     assert(NULL != output_type_name);
 
+    log_trace("tcc_type = %s (%d)", output_type_name, tcc_type);
     if (tcc_type == 0) {
         log_error("Unexpected target type when outputting file. Type = %d", target->type);
         return WRK_RESULT_UNEXPECTED_TYPE;
     }
 
+    log_trace("setting output to tcc_type");
     int ret = tcc_set_output_type(wrk_state->tcc, tcc_type);
     if (ret != 0) {
         log_error("%s failed to set output type");
-        return NULL;
+        return WRK_RESULT_ERROR;
     }
 
-    log_trace("outputing file %s", target->name);
+    log_trace("outputting file %s", target->name);
     ret = tcc_output_file(wrk_state->tcc, target->name);
     if (ret != 0) {
         return WRK_RESULT_ERROR;

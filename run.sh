@@ -12,7 +12,7 @@ echo "Building work.so"
 tcc -shared -L/usr/local/lib -fPIC -o work.so -ltcc -lc worklib.o log.o -Iinc -I/usr/local/include -I./dep/growable_buf -I./dep/logc -g
 
 echo "Building work"
-tcc -v -L/usr/local/lib -L. src/work.c log.o worklib.o -Iinc -I/usr/local/include -I./dep/growable_buf -I./dep/logc -o work -g -ltcc -pthread -ldl
+tcc -v -L/usr/local/lib -L. src/main.c log.o worklib.o -Iinc -I/usr/local/include -I./dep/growable_buf -I./dep/logc -o work -g -ltcc -pthread -ldl
 
-echo "Run work"
-./work example/wrk.c
+# echo "Run work"
+# ./work example/work.c
