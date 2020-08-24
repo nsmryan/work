@@ -66,9 +66,16 @@ int main(int argc, char *argv[]) {
 WrkTarget *wrk_main(WrkState *wrk_state, WrkTarget *target) {
     printf("work is doing the work to compile itself\n");
 
-    // TODO should probably wrap, and allow exit on error
-    system("rm build -r");
-    system("mkdir build");
+    WrkTarget *rm = wrk_target_create("rm", WRK_TARGET_TYPE_CMD);
+    rm->tool = "rm";
+    wrk_target_add_flag(rm, "build");
+    wrk_target_add_flag(rm, "-r");
+    wrk_target_execute(wrk_state, rm);
+
+    WrkTarget *mkdir = wrk_target_create("mkdir", WRK_TARGET_TYPE_CMD);
+    mkdir->tool = "mkdir";
+    wrk_target_add_flag(mkdir, "build");
+    wrk_target_execute(wrk_state, mkdir);
 
     /* WorkLib */
     WrkTarget *worklib = wrk_target_create(BUILD_DIR "worklib.o", WRK_TARGET_TYPE_OBJ);
@@ -95,6 +102,11 @@ WrkTarget *wrk_main(WrkState *wrk_state, WrkTarget *target) {
     printf("creation done, not yet built\n");
     wrk_output_file(wrk_state, work_target);
     printf("file output\n");
+
+    // testing executable targets
+    work_target->tool = "tcc";
+    wrk_target_add_flag(work_target, "-o build/work_exe");
+    wrk_target_execute(wrk_state, work_target);
 
     return work_target;
 }

@@ -122,7 +122,6 @@ WRK_RESULT_ENUM wrk_target_build(WrkState *wrk_state, WrkTarget *target) {
     log_trace("adding flags");
     for (uint32_t flag_index = 0; flag_index < buf_size(target->flags); flag_index++) {
         log_trace("\tflag '%s'", target->flags[flag_index]);
-        // TODO do we need to concat options first, or can we feed them one-by-one like this?
         tcc_set_options(target->tcc, target->flags[flag_index]);
         if (ret != 0) {
             log_error("tcc error %d", ret);
@@ -248,20 +247,12 @@ WrkTarget *wrk_run_workfile(WrkState *wrk_state, WrkTarget *prototype, char *wor
 
     int ret = 0;
 
-    log_trace("adding library paths");
-    ret = tcc_add_library_path(wrk_state->tcc, ".");
-    if (ret != 0) {
-        log_error("%s failed to add library path", __FUNCTION__);
-        return NULL;
-    }
-
     ret = tcc_add_library_path(wrk_state->tcc, "/usr/lib/x86_64-linux-gnu");
     if (ret != 0) {
         log_error("%s failed to add library path", __FUNCTION__);
         return NULL;
     }
 
-    // NOTE this is supposed to pick up libtcc.a, but it does not
     ret = tcc_add_library_path(wrk_state->tcc, "/usr/local/lib");
     if (ret != 0) {
         log_error("%s failed to add library path", __FUNCTION__);
@@ -300,7 +291,7 @@ WrkTarget *wrk_run_workfile(WrkState *wrk_state, WrkTarget *prototype, char *wor
         return NULL;
     }
 
-    // TODO add file or add library? .so did not include symbols
+    // TODO should create a libworklib.so and just link this, or .a
     log_trace("adding worklib.o");
     ret = tcc_add_file(wrk_state->tcc, "worklib.o");
     if (ret != 0) {
@@ -364,3 +355,88 @@ WrkTarget *wrk_run_workfile(WrkState *wrk_state, WrkTarget *prototype, char *wor
     return result_target;
 }
 
+void wrk_target_execute(WrkState *wrk_state, WrkTarget *target) {
+    uint32_t cmd_len = 0;
+
+    assert(NULL != target->tool);
+    cmd_len = strlen(target->tool);
+
+    // get string length
+    for (uint32_t index = 0; index < buf_size(target->flags); index++) {
+        cmd_len += strlen(target->flags[index]) + strlen(" ");
+    }
+
+    for (uint32_t index = 0; index < buf_size(target->inc_paths); index++) {
+        cmd_len += strlen(target->inc_paths[index]) + strlen(" -I");
+    }
+
+    for (uint32_t index = 0; index < buf_size(target->inputs); index++) {
+        cmd_len += strlen( target->inputs[index]) + strlen(" ");
+    }
+
+    for (uint32_t index = 0; index < buf_size(target->lib_paths); index++) {
+        cmd_len += strlen( target->lib_paths[index]) + strlen("-L ");
+    }
+
+    for (uint32_t index = 0; index < buf_size(target->libs); index++) {
+        cmd_len += strlen(target->libs[index]) + strlen("-l ");
+    }
+
+    for (uint32_t index = 0; index < buf_size(target->vars); index++) {
+        cmd_len += strlen(target->vars[index]) + strlen("-D");
+    }
+
+    for (uint32_t index = 0; index < buf_size(target->var_values); index++) {
+        cmd_len += strlen(target->var_values[index]) + strlen("= ");
+    }
+
+    // build command string
+    // NOTE quadratic complexity string concat
+    char *cmd = (char*)calloc(cmd_len, 1);
+
+    strcat(cmd, target->tool);
+    strcat(cmd, " ");
+
+    for (uint32_t index = 0; index < buf_size(target->flags); index++) {
+        strcat(cmd, target->flags[index]);
+        strcat(cmd, " ");
+    }
+
+    for (uint32_t index = 0; index < buf_size(target->inc_paths); index++) {
+        strcat(cmd, "-I");
+        strcat(cmd, target->inc_paths[index]);
+        strcat(cmd, " ");
+    }
+
+    for (uint32_t index = 0; index < buf_size(target->inputs); index++) {
+        strcat(cmd, target->inputs[index]);
+        strcat(cmd, " ");
+    }
+
+    for (uint32_t index = 0; index < buf_size(target->lib_paths); index++) {
+        strcat(cmd, "-L");
+        strcat(cmd, target->lib_paths[index]);
+        strcat(cmd, " ");
+    }
+
+    for (uint32_t index = 0; index < buf_size(target->libs); index++) {
+        strcat(cmd, "-l");
+        strcat(cmd, target->libs[index]);
+        strcat(cmd, " ");
+    }
+
+    for (uint32_t index = 0; index < buf_size(target->vars); index++) {
+        strcat(cmd, "-D");
+        strcat(cmd, target->vars[index]);
+        strcat(cmd, "=");
+        strcat(cmd, target->var_values[index]);
+        strcat(cmd, " ");
+    }
+
+    log_trace("%s", cmd);
+    system(cmd);
+
+    if (NULL != cmd) {
+        free(cmd);
+    }
+}

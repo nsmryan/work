@@ -14,7 +14,6 @@
 // work list   - list all source files (for use with make or entr)
 // word dryrun - print commands that work would run
 
-
 typedef enum WRK_RESULT_ENUM {
     WRK_RESULT_OKAY     = 1,
     WRK_RESULT_NULL_PTR = 2,
@@ -22,14 +21,14 @@ typedef enum WRK_RESULT_ENUM {
     WRK_RESULT_ERROR    = 4,
 } WRK_RESULT_ENUM;
 
-// NOTE does not include archive files- no option
-// in tcc. may need to make separately
+// NOTE archive files have no option in tcc. may need to make separately
 typedef enum WRK_TARGET_TYPE_ENUM {
     WRK_TARGET_TYPE_NAMESPACE = 1,
     WRK_TARGET_TYPE_OBJ       = 2,
     WRK_TARGET_TYPE_AR        = 3,
     WRK_TARGET_TYPE_EXE       = 4,
     WRK_TARGET_TYPE_SO        = 5,
+    WRK_TARGET_TYPE_CMD       = 6,
 } WRK_TARGET_TYPE_ENUM;
 
 
@@ -43,7 +42,6 @@ typedef struct WrkTarget {
 
     char **flags;
     char **inputs;
-    char **incs;
     char **inc_paths;
     char **libs;
     char **lib_paths;
@@ -91,6 +89,8 @@ void wrk_target_add_include_paths(WrkTarget *target, char *name[]);
 void wrk_target_add_lib_paths(WrkTarget *target, char *name[]);
 void wrk_target_add_libs(WrkTarget *target, char *name[]);
 
+// utilities
+void wrk_target_execute(WrkState *wrk_state, WrkTarget *target);
 
 /* Building */
 WRK_RESULT_ENUM wrk_target_build(WrkState *state, WrkTarget *target);

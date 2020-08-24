@@ -11,7 +11,7 @@ start faster. May be able to do this when running from memory as well.
 
 
 potential for a unity built style, could make it even faster then outputing
-object files.
+object files. already kind of doing this in worklib.o.
 
 potential for user-provided entry point- if no main, then build a main
 function that calls the user function.
@@ -35,11 +35,6 @@ This might be okay.
 If so, just return targets from wrk\_main. May link them or return an array.
 currently returned targets do nothing. then could be used to feed into other targets
 in the future.
-
-
-### Object Files
-can add object files- could build each file in project, then add them each in turn?
-this seems the same as compiling them in from source, but perhaps slightly faster?
 
 ### Work Files vs Main Program
 can have separate tcc states for each wrk.c file, each declaring a wrk\_main function
@@ -77,3 +72,10 @@ Is it important to return a description of targets? this gets back to the graph 
 it may be very complex, and I'm not going to track dependencies.
 perhaps there is no way to list commands without running, or if you do there
 is a flag in the state that can be checked when appropriate.
+
+## Possible Changes
+could support other compilers- perhaps default to tcc, but allow building
+a command and executing with system
+
+could try out sub-work files, such as for dependencies
+
