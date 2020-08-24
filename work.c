@@ -15,9 +15,7 @@
 char *gv_includes[] =
     { "/usr/include",
       "/usr/include/x86_64-linux-gnu",
-      "/usr/include/lib",
       "/usr/local/lib/tcc/include",
-      "/usr/local/lib",
       "/usr/local/include",
       "./dep/fs",
       "./dep/logc",
