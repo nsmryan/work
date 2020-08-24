@@ -50,6 +50,8 @@ typedef struct WrkTarget {
     char **vars;
     char **var_values;
 
+    TCCState *tcc;
+
     struct WrkTarget *parent;
 } WrkTarget;
 
