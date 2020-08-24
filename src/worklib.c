@@ -78,6 +78,17 @@ WRK_RESULT_ENUM wrk_target_build(WrkState *wrk_state, WrkTarget *target) {
 
     tcc_set_error_func(target->tcc, NULL, wrk_error_func);
 
+    log_trace("adding flags");
+    for (uint32_t flag_index = 0; flag_index < buf_size(target->flags); flag_index++) {
+        log_trace("\tflag '%s'", target->flags[flag_index]);
+        // TODO do we need to concat options first, or can we feed them one-by-one like this?
+        tcc_set_options(target->tcc, target->flags[flag_index]);
+        if (ret != 0) {
+            log_error("tcc error %d", ret);
+            return WRK_RESULT_ERROR;
+        }
+    }
+
     log_trace("adding include paths");
     for (uint32_t inc_index = 0; inc_index < buf_size(target->inc_paths); inc_index++) {
         log_trace("\tinclude '%s'", target->inc_paths[inc_index]);
@@ -120,17 +131,6 @@ WRK_RESULT_ENUM wrk_target_build(WrkState *wrk_state, WrkTarget *target) {
         // NOTE tcc_add_file vs tcc_add_library
         ret = tcc_add_library(target->tcc, target->libs[lib_index]);
         //ret = tcc_add_file(target->tcc, target->libs[lib_index]);
-        if (ret != 0) {
-            log_error("tcc error %d", ret);
-            return WRK_RESULT_ERROR;
-        }
-    }
-
-    log_trace("adding flags");
-    for (uint32_t flag_index = 0; flag_index < buf_size(target->flags); flag_index++) {
-        log_trace("\tflag '%s'", target->flags[flag_index]);
-        // TODO do we need to concat options first, or can we feed them one-by-one like this?
-        tcc_set_options(target->tcc, target->flags[flag_index]);
         if (ret != 0) {
             log_error("tcc error %d", ret);
             return WRK_RESULT_ERROR;

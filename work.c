@@ -35,9 +35,9 @@ char *gv_source[] =
 
 char *gv_lib_paths[] =
     { ".",
-      "/usr/local/lib",
-      "/usr/local/lib/tcc",
-      "/usr/local/bin/tcc",
+      //"/usr/local/lib",
+      //"/usr/local/lib/tcc",
+      //"/usr/local/bin/tcc",
       "/usr/lib/x86_64-linux-gnu",
       NULL,
     };
