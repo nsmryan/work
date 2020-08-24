@@ -76,13 +76,20 @@ void wrk_target_link(WrkTarget *parent, WrkTarget *target);
 WRK_RESULT_ENUM wrk_target_merge(WrkTarget *dest, WrkTarget *src);
 WrkTarget *wrk_target_collapse(WrkTarget *target);
 
-char *wrk_target_command(WrkTarget *target);
-
+/* Add Files to Target */
+// single
 void wrk_target_add_input(WrkTarget *target, char *name);
 void wrk_target_add_flag(WrkTarget *target, char *name);
 void wrk_target_add_include_path(WrkTarget *target, char *name);
 void wrk_target_add_lib_path(WrkTarget *target, char *name);
 void wrk_target_add_lib(WrkTarget *target, char *name);
+
+// group
+void wrk_target_add_inputs(WrkTarget *target, char *name[]);
+void wrk_target_add_flags(WrkTarget *target, char *name[]);
+void wrk_target_add_include_paths(WrkTarget *target, char *name[]);
+void wrk_target_add_lib_paths(WrkTarget *target, char *name[]);
+void wrk_target_add_libs(WrkTarget *target, char *name[]);
 
 
 /* Building */

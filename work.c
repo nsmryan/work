@@ -37,6 +37,13 @@ char *gv_lib_paths[] =
       NULL,
     };
 
+char *gv_libs[] =
+    { "dl",
+      "pthread",
+      "tcc",
+      NULL,
+    };
+
 
 WrkTarget *wrk_main(WrkState *wrk_state, WrkTarget *target);
 
@@ -59,55 +66,28 @@ int main(int argc, char *argv[]) {
 WrkTarget *wrk_main(WrkState *wrk_state, WrkTarget *target) {
     printf("work is doing the work to compile itself\n");
 
-    // TODO need to ensure 'build' dir exists.
-    // wrk_cmd(wrk_state, "mkdir", "build");
+    // TODO should probably wrap, and allow exit on error
+    system("rm build -r");
+    system("mkdir build");
 
     /* WorkLib */
     WrkTarget *worklib = wrk_target_create(BUILD_DIR "worklib.o", WRK_TARGET_TYPE_OBJ);
 
-    {
-        int inc_index = 0;
-        while (gv_includes[inc_index] != NULL) {
-            wrk_target_add_include_path(worklib, gv_includes[inc_index]);
-            inc_index++;
-        }
-    }
+    wrk_target_add_include_paths(worklib, gv_includes);
+    wrk_target_add_inputs(worklib, gv_source);
 
-    {
-        int src_index = 0;
-        while (gv_source[src_index] != NULL) {
-            wrk_target_add_input(worklib, gv_source[src_index]);
-            src_index++;
-        }
-    }
     wrk_target_build(wrk_state, worklib);
     wrk_output_file(wrk_state, worklib);
 
     /* Work Executable */
     WrkTarget *work_target = wrk_target_create(BUILD_DIR "work", WRK_TARGET_TYPE_EXE);
 
-    {
-        int inc_index = 0;
-        while (gv_includes[inc_index] != NULL) {
-            wrk_target_add_include_path(work_target, gv_includes[inc_index]);
-            inc_index++;
-        }
-    }
-
-    wrk_target_add_lib(work_target, "dl");
-    wrk_target_add_lib(work_target, "pthread");
-    wrk_target_add_lib(work_target, "tcc");
+    wrk_target_add_include_paths(work_target, gv_includes);
+    wrk_target_add_libs(work_target, gv_libs);
+    wrk_target_add_lib_paths(work_target, gv_lib_paths);
 
     wrk_target_add_input(work_target, "src/main.c");
     wrk_target_add_input(work_target, "build/worklib.o");
-
-    {
-        int lib_path_index = 0;
-        while (gv_lib_paths[lib_path_index] != NULL) {
-            wrk_target_add_lib_path(work_target, gv_lib_paths[lib_path_index]);
-            lib_path_index++;
-        }
-    }
 
     /* Build */
     printf("creating work\n");

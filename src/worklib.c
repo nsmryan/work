@@ -49,20 +49,61 @@ void wrk_target_add_input(WrkTarget *target, char *name) {
     buf_push(target->inputs, name);
 }
 
+void wrk_target_add_inputs(WrkTarget *target, char *name[]) {
+    uint32_t index = 0;
+    while (name[index] != NULL) {
+        wrk_target_add_input(target, name[index]);
+        index++;
+    }
+}
+
+
 void wrk_target_add_flag(WrkTarget *target, char *name) {
     buf_push(target->flags, name);
+}
+
+void wrk_target_add_flags(WrkTarget *target, char *name[]) {
+    uint32_t index = 0;
+    while (name[index] != NULL) {
+        wrk_target_add_flag(target, name[index]);
+        index++;
+    }
 }
 
 void wrk_target_add_include_path(WrkTarget *target, char *name) {
     buf_push(target->inc_paths, name);
 }
 
+void wrk_target_add_include_paths(WrkTarget *target, char *name[]) {
+    uint32_t index = 0;
+    while (name[index] != NULL) {
+        wrk_target_add_include_path(target, name[index]);
+        index++;
+    }
+}
+
 void wrk_target_add_lib_path(WrkTarget *target, char *name) {
     buf_push(target->lib_paths, name);
 }
 
+void wrk_target_add_lib_paths(WrkTarget *target, char *name[]) {
+    uint32_t index = 0;
+    while (name[index] != NULL) {
+        wrk_target_add_lib_path(target, name[index]);
+        index++;
+    }
+}
+
 void wrk_target_add_lib(WrkTarget *target, char *name) {
     buf_push(target->libs, name);
+}
+
+void wrk_target_add_libs(WrkTarget *target, char *name[]) {
+    uint32_t index = 0;
+    while (name[index] != NULL) {
+        wrk_target_add_lib(target, name[index]);
+        index++;
+    }
 }
 
 WRK_RESULT_ENUM wrk_target_build(WrkState *wrk_state, WrkTarget *target) {

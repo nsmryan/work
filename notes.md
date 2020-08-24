@@ -16,6 +16,13 @@ object files.
 potential for user-provided entry point- if no main, then build a main
 function that calls the user function.
 
+
+headers from source:
+tcc -MD -MF FILENAME name.c -Iincludes -c
+this works with gcc as well. gcc can omit system paths, but tcc cannot
+this list starts with makefile rules, but could be converted into a list of
+include paths, especially with a library for handling paths.
+
 ## Design Notes
 
 ### Options with Targets
@@ -26,6 +33,8 @@ This prevents targets from being dependant on the results of other targets.
 This might be okay.
 
 If so, just return targets from wrk\_main. May link them or return an array.
+currently returned targets do nothing. then could be used to feed into other targets
+in the future.
 
 
 ### Object Files
