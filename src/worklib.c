@@ -275,7 +275,7 @@ WrkTarget *wrk_run_workfile(WrkState *wrk_state, WrkTarget *prototype, char *wor
     }
 
     log_trace("adding libtcc.a");
-    ret = tcc_add_file(wrk_state->tcc, "libtcc.a");
+    ret = tcc_add_library(wrk_state->tcc, "tcc");
     if (ret != 0) {
         log_error("%s failed to add library (%d)", __FUNCTION__, ret);
         return NULL;

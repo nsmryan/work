@@ -35,7 +35,7 @@ char *gv_source[] =
 
 char *gv_lib_paths[] =
     { ".",
-      //"/usr/local/lib",
+      "/usr/local/lib",
       //"/usr/local/lib/tcc",
       //"/usr/local/bin/tcc",
       "/usr/lib/x86_64-linux-gnu",
@@ -90,8 +90,6 @@ WrkTarget *wrk_main(WrkState *wrk_state, WrkTarget *target) {
 
     /* Work Executable */
     WrkTarget *work_target = wrk_target_create(BUILD_DIR "work", WRK_TARGET_TYPE_EXE);
-
-    //wrk_target_add_lib(work_target, "dl");
 
     {
         int inc_index = 0;
