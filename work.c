@@ -4,7 +4,10 @@
 #include <string.h>
 #include <assert.h>
 
+#if defined(WORK_MAIN)
 #include "log.h"
+#endif
+
 #include "work.h"
 
 #define BUILD_DIR "build/"
