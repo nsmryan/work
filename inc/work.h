@@ -39,6 +39,7 @@ typedef struct WrkTarget {
     WRK_TARGET_TYPE_ENUM type;
 
     char *tool;
+    char *output;
 
     char **flags;
     char **inputs;

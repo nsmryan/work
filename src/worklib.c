@@ -390,6 +390,11 @@ void wrk_target_execute(WrkState *wrk_state, WrkTarget *target) {
         cmd_len += strlen(target->var_values[index]) + strlen("= ");
     }
 
+    if (NULL != target->output) {
+        cmd_len += strlen("-o ");
+        cmd_len += target->output;
+    }
+
     // build command string
     // NOTE quadratic complexity string concat
     char *cmd = (char*)calloc(cmd_len, 1);
@@ -431,6 +436,11 @@ void wrk_target_execute(WrkState *wrk_state, WrkTarget *target) {
         strcat(cmd, "=");
         strcat(cmd, target->var_values[index]);
         strcat(cmd, " ");
+    }
+
+    if (NULL != target->output) {
+        strcat(cmd, "-o ");
+        strcat(cmd, target->output);
     }
 
     log_trace("%s", cmd);

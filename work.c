@@ -105,7 +105,7 @@ WrkTarget *wrk_main(WrkState *wrk_state, WrkTarget *target) {
 
     // testing executable targets
     work_target->tool = "tcc";
-    wrk_target_add_flag(work_target, "-o build/work_exe");
+    work_target->output = "build/work_exe";
     wrk_target_execute(wrk_state, work_target);
 
     return work_target;

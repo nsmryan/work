@@ -74,8 +74,18 @@ perhaps there is no way to list commands without running, or if you do there
 is a flag in the state that can be checked when appropriate.
 
 ## Possible Changes
-could support other compilers- perhaps default to tcc, but allow building
-a command and executing with system
+could have build and output commands allow other compilers, instead of
+current using execute for compiling without tcc
 
 could try out sub-work files, such as for dependencies
 
+
+## Post
+first you compile a program and run it
+
+then that program needs to compile a program
+
+then the program that your program's program compiles is itself
+
+then the program that your program's program compiles needs to compile
+programs that compile the parts of the original program
