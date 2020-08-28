@@ -21,7 +21,7 @@ int main(int argc, char *argv[]) {
     wrk_state_create(&wrk_state, true);
 
     log_trace("creating target");
-    WrkTarget *prototype = wrk_target_create(NULL, WRK_TARGET_TYPE_NAMESPACE);
+    WrkTarget *prototype = wrk_target_from_env();
 
     WrkTarget *target = wrk_run_workfile(&wrk_state, prototype, wrk_file);
     printf("finished running workfile\n");

@@ -21,6 +21,7 @@ WrkTarget *wrk_target_create(char *name, WRK_TARGET_TYPE_ENUM type) {
 }
 
 void wrk_error_func(void *wrk_state_ptr, const char *msg) {
+    (void)wrk_state_ptr;
     printf("tcc error '%s'\n", msg);
 }
 
@@ -39,6 +40,27 @@ WRK_RESULT_ENUM wrk_state_create(WrkState *state, bool run) {
     state->tcc = tcc;
 
     return WRK_RESULT_OKAY;
+}
+
+WrkTarget *wrk_target_from_env(void) {
+    WrkTarget *target = wrk_target_create("env", WRK_TARGET_TYPE_NAMESPACE);
+
+    target->tool = getenv("CC");
+    char *env = NULL;
+
+    // NOTE these are added as single flags, rather then split into
+    // allocations and added individually
+    env = getenv("CFLAGS");
+    if (env != NULL) {
+        wrk_target_add_flag(target, env);
+    }
+
+    env = getenv("LDFLAGS");
+    if (env != NULL) {
+        wrk_target_add_flag(target, env);
+    }
+
+    return target;
 }
 
 void wrk_target_link(WrkTarget *dst, WrkTarget *src) {
@@ -107,6 +129,8 @@ void wrk_target_add_libs(WrkTarget *target, char *name[]) {
 }
 
 WRK_RESULT_ENUM wrk_target_build(WrkState *wrk_state, WrkTarget *target) {
+    (void)wrk_state;
+
     int ret = 0;
 
     if (target->tcc == NULL) {
@@ -356,6 +380,8 @@ WrkTarget *wrk_run_workfile(WrkState *wrk_state, WrkTarget *prototype, char *wor
 }
 
 void wrk_target_execute(WrkState *wrk_state, WrkTarget *target) {
+    (void)wrk_state;
+
     uint32_t cmd_len = 0;
 
     assert(NULL != target->tool);
@@ -392,7 +418,7 @@ void wrk_target_execute(WrkState *wrk_state, WrkTarget *target) {
 
     if (NULL != target->output) {
         cmd_len += strlen("-o ");
-        cmd_len += target->output;
+        cmd_len += strlen(target->output);
     }
 
     // build command string
@@ -444,7 +470,10 @@ void wrk_target_execute(WrkState *wrk_state, WrkTarget *target) {
     }
 
     log_trace("%s", cmd);
-    system(cmd);
+    int ret = system(cmd);
+    if (ret == -1) {
+        log_error("Command '%s' failed to execute!");
+    }
 
     if (NULL != cmd) {
         free(cmd);

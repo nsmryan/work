@@ -41,6 +41,7 @@ typedef struct WrkTarget {
     char *tool;
     char *output;
 
+    // NOTE consider splitting to LDFLAGS and CFLAGS
     char **flags;
     char **inputs;
     char **inc_paths;
@@ -70,10 +71,16 @@ WRK_RESULT_ENUM wrk_state_create(WrkState *state, bool run);
 WrkTarget *wrk_target_create(char *name, WRK_TARGET_TYPE_ENUM type);
 WRK_TARGET_TYPE_ENUM wrk_target_destroy(WrkTarget *target);
 
+WrkTarget *wrk_target_from_env(void);
+
 WrkTarget *wrk_target_dup(WrkTarget *target);
-void wrk_target_link(WrkTarget *parent, WrkTarget *target);
 WRK_RESULT_ENUM wrk_target_merge(WrkTarget *dest, WrkTarget *src);
-WrkTarget *wrk_target_collapse(WrkTarget *target);
+
+// Is linking useful? this is more like handing back a graph of actions
+// to execute instead of executing them
+//void wrk_target_link(WrkTarget *parent, WrkTarget *target);
+//WrkTarget *wrk_target_collapse(WrkTarget *target);
+//WrkTarget *wrk_target_collapse(WrkTarget *target);
 
 /* Add Files to Target */
 // single
