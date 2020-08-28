@@ -6,6 +6,8 @@ be build from source on every compile.
 
 ## Dependencies
 Work uses the following libraries:
+
+
     * fs.c (MIT) - https://github.com/jwerle/fs.c
     * growable\_buf (unlicense) - https://github.com/skeeto/growable\_buf
     * logc (MIT) - https://github.com/rxi/log.c
