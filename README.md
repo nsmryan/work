@@ -21,7 +21,7 @@ this space a bit.
 
 
 ## Dependencies
-Work uses the following libraries:
+Work uses the following libraries as source files:
 
 
     * fs.c (MIT) - https://github.com/jwerle/fs.c
