@@ -25,7 +25,7 @@ Work uses the following libraries as source files:
 
 
     * fs.c (MIT) - https://github.com/jwerle/fs.c
-    * growable\_buf (unlicense) - https://github.com/skeeto/growable\_buf
+    * growable\_buf (unlicense) - https://github.com/skeeto/growable-buf
     * logc (MIT) - https://github.com/rxi/log.c
 
 
